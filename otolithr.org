@@ -60,7 +60,7 @@
 - 日齢組成を描画
 * デモ
 ** 読み込むディレクトリを指定
-#+BEGIN_SRC R :results silent :exports code :session *R:tidyNAS*
+#+BEGIN_SRC R :results silent :exports code :session *R:otolithr*
   devtools::load_all("otolithr")
   path <- "/Users/ahayashi/Documents/GitHub/otolith/ratocB/Sardinops_melanostictus"
 #+END_SRC
@@ -68,7 +68,7 @@
 ** .hdr ファイルを全て統合
 
 *** とりあえず使うには
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   otldata <- path %>%
     get_path() %>%
     get_dir2load() %>%
@@ -116,7 +116,7 @@ There were 50 or more warnings (use warnings() to see the first 50)
 #+end_example
 
 *** ファイルは標本を一意に特定できるように命名せよ
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
 df %>% dplyr::filter(!is.na(spcs)) %>% head()
 #+END_SRC
 
@@ -140,7 +140,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 
 ** 内部で使っている関数
 *** .hdr ファイルがある全ディレクトリのリストを作成する
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   dirs_org  <- get_path(path)
   head(dirs_org)
   tail(dirs_org)
@@ -167,7 +167,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 本パッケージでは，data/ 以下に入っている.hdrファイル以外は無視する
 理由: 日輪が不明瞭だったりして解析できなかった個体は，統合データを汚染するため．
 解析に含めないデータは data/ 内に残しておかず，cannot/ などに格納するようにする．
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   dirs2load <- dirs_org %>% get_dir2load()
   head(dirs2load)
   tail(dirs2load)
@@ -191,7 +191,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 [1] "データ統合から除外された個体は 9 個体．"
 #+end_example
 *** フルパスをファイル名に変換する
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   fnames    <- dirs2load %>%
     fullpath2fname()
   head(fnames)
@@ -213,7 +213,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 - reared
 のいずれかに格納されるべきである．
 **** 属性の取得
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   types     <- purrr::map(dirs2load, detect_type) %>% unlist()
   head(types)
   tail(types)
@@ -224,7 +224,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 : [6] "commercial"
 : [1] "survey" "survey" "survey" "survey" "survey" "survey"
 **** ファイル名に属性を付与
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   fnames_with_type <- purrr::map2(fnames, types, set_type)
   head(fnames_with_type, 2)
   tail(fnames_with_type, 2)
@@ -253,7 +253,7 @@ attr(,"class")
 #+end_example
 
 **** 属性に応じてファイル名から情報を取得
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   info      <- purrr::map(fnames_with_type, get_info)
   str(info[[1]])
   str(info[[100]])
@@ -286,7 +286,7 @@ List of 6
  $ sampleno: int 11
 #+end_example
 * 追加予定の機能
-[[https://github.com/smxshxishxad/tidyNAS/issues][Issues]] にて随時募集中
+[[https://github.com/smxshxishxad/otolithr/issues][Issues]] にて随時募集中
 * 開発環境の整備
 ** ディレクトリ作成
 #+BEGIN_SRC R :results silent
