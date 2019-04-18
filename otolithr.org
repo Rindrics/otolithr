@@ -337,7 +337,7 @@ Imports:
 :header-args: :results silent :exports code
 :END:
 *** テスト/ファイル名
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_fname.R
+#+BEGIN_SRC R :tangle tests/testthat/test_fname.R
   library(otolithr)
   context("Handle file name")
 
@@ -380,9 +380,10 @@ Imports:
     expect_true(is.na(xtract_var(fname, "key2")))
     expect_equal(xtract_var(fname, "sampleno"), "005")
   })
+
 #+END_SRC
 *** テスト/ファイルパス
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_fpath.R
+#+BEGIN_SRC R :tangle tests/testthat/test_fpath.R
   library(otolithr)
   context("Manage path")
 
@@ -415,7 +416,7 @@ Imports:
   })
 #+END_SRC
 *** テスト/データタイプ（調査|漁獲物|飼育）
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_dattype.R
+#+BEGIN_SRC R :tangle tests/testthat/test_dattype.R
   library(otolithr)
   context("Control behavior according to dattype")
 
@@ -471,7 +472,7 @@ Imports:
   })
 #+END_SRC
 *** テスト/hdr ファイルハンドリング
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_handle_hdr.R
+#+BEGIN_SRC R :tangle tests/testthat/test_handle_hdr.R
   context("Load .hdr file")
 
   infile   <-
@@ -496,7 +497,7 @@ Imports:
   })
 #+END_SRC
 *** 機能テスト
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_load_otolith.R
+#+BEGIN_SRC R :tangle tests/testthat/test_load_otolith.R
   context("Functional test")
 
   indir      <- "../Genus-spcs"
@@ -510,7 +511,7 @@ Imports:
 #+END_SRC
 ** 関数
 *** ヘルパー関数
-#+BEGIN_SRC R :tangle otolithr/R/util.R :results silent
+#+BEGIN_SRC R :tangle R/util.R :results silent
   #' @importFrom magrittr %>%
   #' @export
   magrittr::`%>%`
@@ -610,7 +611,7 @@ Imports:
 #+END_SRC
 
 *** ファイルパス
-#+BEGIN_SRC R :tangle otolithr/R/fpath.R
+#+BEGIN_SRC R :tangle R/fpath.R
   get_path <- function(dir.spcs) {
     regex <- ".+hdr$"
     fullpaths <- list.files(dir.spcs, pattern = regex,
@@ -641,7 +642,7 @@ Imports:
 #+RESULTS:
 
 *** hdr 読み込み
-#+BEGIN_SRC R :tangle otolithr/R/handle_hdr.R :results silent
+#+BEGIN_SRC R :tangle R/handle_hdr.R :results silent
   load_hdr <- function(fname){
     read.csv(fname, fileEncoding = "CP932",
              header = FALSE, stringsAsFactors = FALSE)
@@ -659,7 +660,7 @@ Imports:
 #+END_SRC
 
 *** 統合関数
-#+BEGIN_SRC R :tangle otolithr/R/load_otolith.R :results silent
+#+BEGIN_SRC R :tangle R/load_otolith.R :results silent
   make_data <- function(fname, fname_with_type) {
     data     <- load_hdr(fname)
     out      <- get_info(fname_with_type)
