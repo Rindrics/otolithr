@@ -479,6 +479,19 @@ Imports:
     expect_error(detect_type(path_error), msg, fix = TRUE)
   })
 #+END_SRC
+*** テスト/種ごとの振る舞い
+#+begin_src R :tangle tests/testthat/test_spcs.R
+  test_that("set_spcsname() give spcs name class correctly", {
+    fname <- "foo"
+    expect_is(set_spcsname(fname, "Sardinops-melanostictus"),
+              "Sardinops-melanostictus")
+    expect_is(set_spcsname(fname, "Engraulis-japonicus"),
+              "Engraulis-japonicus")
+    expect_is(set_spcsname(fname, "Trachurus-japonicus"),
+              "Trachurus-japonicus")
+  })
+
+#+end_src
 *** テスト/hdr ファイルハンドリング
 #+BEGIN_SRC R :tangle tests/testthat/test_handle_hdr.R
   context("Load .hdr file")
@@ -555,6 +568,11 @@ Imports:
     if (!(type %in% c("survey", "commercial", "reared")))
       stop("'type' must be one of 'survey', 'commercial', or 'reared'.")
     class(fname) <- type
+    fname
+  }
+
+  set_spcsname <- function(fname, spcsname) {
+    class(fname) <- spcsname
     fname
   }
 
