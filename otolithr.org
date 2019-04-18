@@ -326,10 +326,15 @@ Imports:
 * 開発
 ** リロード & 自動テスト
 #+BEGIN_SRC R :results silent
+  devtools::document(roclets=c('rd', 'collate', 'namespace'))
   devtools::load_all()
   system("R CMD INSTALL --preclean --no-multiarch --with-keep.source .")
   devtools::test()
-  devtools::document(roclets=c('rd', 'collate', 'namespace'))
+  lintr::lint_package()
+  devtools::check(args = "--as-cran")
+  covr::package_coverage()
+
+  # Next task: dic_ageoffset を書き出す
 #+END_SRC
 ** 内部データ
 #+begin_src R
