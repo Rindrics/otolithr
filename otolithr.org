@@ -331,6 +331,14 @@ Imports:
   devtools::test()
   devtools::document(roclets=c('rd', 'collate', 'namespace'))
 #+END_SRC
+** 内部データ
+#+begin_src R
+  tbl_ageoffset <- tibble::tribble(~spcsname, ~age.offset, ~reference,
+                                   "Sardinops-melanostuctus", 2L, "foo",
+                                   "Engraulis-japonicus", 2L, "bar",
+                                   "Trachurus-japonicus", 2L, "Xie et al")
+  dic_ageoffset <- hash::hash(tbl_ageoffset$spcsname, tbl_ageoffset$age.offset)
+#+end_src
 
 ** テストコード
 :PROPERTIES:
