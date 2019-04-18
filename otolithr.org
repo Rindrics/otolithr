@@ -654,9 +654,10 @@ Imports:
     which(x == "日輪幅") + 1 # Data of 1stinc is located just after "日輪幅".
   }
 
-  get_incdata <- function(x) {
-    str <- x
-    out <- as.numeric(str[locate_1stinc(x):length(str)])
+  get_incdata <- function(hdrdata) {
+    x   <- as.character(hdrdata$V1)
+    out <- x[locate_1stinc(x):length(x)] %>%
+      as.numeric()
     out
   }
 #+END_SRC
@@ -664,11 +665,11 @@ Imports:
 *** 統合関数
 #+BEGIN_SRC R :tangle R/load_otolith.R :results silent
   make_data <- function(fname, fname_with_type) {
-    data     <- load_hdr(fname)
-    out      <- get_info(fname_with_type)
-    out$inc  <- get_incdata(data$V1)
-    out$radius   <- cumsum(out$inc)
-    out$ninc  <- length(out$iw)
+    data       <- load_hdr(fname)
+    out        <- get_info(fname_with_type)
+    out$inc    <- get_incdata(data)
+    out$radius <- cumsum(out$inc)
+    out$ninc   <- length(out$iw)
     out
   }
 
