@@ -1,9 +1,9 @@
 make_data <- function(fname, fname_with_type) {
-  data     <- load_hdr(fname)
-  out      <- get_info(fname_with_type)
-  out$inc  <- get_incdata(data$V1)
-  out$radius   <- cumsum(out$inc)
-  out$ninc  <- length(out$iw)
+  data       <- load_hdr(fname)
+  out        <- get_info(fname_with_type)
+  out$inc    <- get_incdata(data)
+  out$radius <- cumsum(out$inc)
+  out$ninc   <- length(out$iw)
   out
 }
 

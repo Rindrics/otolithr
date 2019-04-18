@@ -34,6 +34,11 @@ set_type <- function(fname, type) {
   fname
 }
 
+set_spcsname <- function(fname, spcsname) {
+  class(fname) <- spcsname
+  fname
+}
+
 xtract_var <- function(fname, var) {
   switch (var,
     "spcsname" = regex <- "(^[A-Z][a-z]+-[a-z]+)_",

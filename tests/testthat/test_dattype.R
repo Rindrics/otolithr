@@ -1,7 +1,7 @@
 library(otolithr)
 context("Control behavior according to dattype")
 
-test_that("set_type() gives type to fname correctly", {
+test_that("set_type() gives dattype class to fname correctly", {
   expect_is(set_type("foo.hdr", "survey"), "survey")
   expect_is(set_type("foo.hdr", "commercial"), "commercial")
   expect_error(set_type("foo.hdr", "bar"),

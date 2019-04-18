@@ -7,8 +7,9 @@ locate_1stinc <- function(x) {
   which(x == "日輪幅") + 1 # Data of 1stinc is located just after "日輪幅".
 }
 
-get_incdata <- function(x) {
-  str <- x
-  out <- as.numeric(str[locate_1stinc(x):length(str)])
+get_incdata <- function(hdrdata) {
+  x   <- as.character(hdrdata$V1)
+  out <- x[locate_1stinc(x):length(x)] %>%
+    as.numeric()
   out
 }
