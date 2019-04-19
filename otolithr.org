@@ -294,9 +294,10 @@ List of 6
   #+END_SRC
 ** 本バッケージ内部で使用するパッケージ
 #+BEGIN_SRC R :results silent
-  usethis::use_package("magrittr", "Imports")
-  usethis::use_package("ggplot2", "Imports")
-  usethis::use_package("tibble", "Imports")
+  usethis::use_package("magrittr")
+  usethis::use_package("ggplot2")
+  usethis::use_package("tibble")
+  usethis::use_package("dplyr")
   usethis::use_testthat()
 #+END_SRC
 
