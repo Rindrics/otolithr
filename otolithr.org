@@ -344,12 +344,14 @@ Imports:
   # Next task: dic_ageoffset を書き出す
 #+END_SRC
 ** 内部データ
-#+begin_src R
+#+begin_src R :results silent
   tbl_ageoffset <- tibble::tribble(~spcsname, ~age.offset, ~reference,
-                                   "Sardinops-melanostuctus", 2L, "foo",
+                                   "Sardinops-melanostictus", 2L, "foo",
                                    "Engraulis-japonicus", 2L, "bar",
                                    "Trachurus-japonicus", 2L, "Xie et al")
   dic_ageoffset <- hash::hash(tbl_ageoffset$spcsname, tbl_ageoffset$age.offset)
+  usethis::use_data(dic_ageoffset,
+                    internal = TRUE, overwrite = TRUE)
 #+end_src
 
 ** テストコード
@@ -703,11 +705,12 @@ Imports:
 *** 統合関数
 #+BEGIN_SRC R :tangle R/load_otolith.R :results silent
   make_data <- function(fname, fname_with_type) {
-    data       <- load_hdr(fname)
-    out        <- get_info(fname_with_type)
-    out$inc    <- get_incdata(data)
-    out$radius <- cumsum(out$inc)
-    out$ninc   <- length(out$iw)
+    data         <- load_hdr(fname)
+    out          <- get_info(fname_with_type)
+    out$inc      <- get_incdata(data)
+    out$radius   <- cumsum(out$inc)
+    out$ninc     <- length(out$inc)
+    out$age.ofst <- dic_ageoffset[[out$spcs]]
     out
   }
 
