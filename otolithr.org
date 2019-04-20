@@ -3,7 +3,7 @@
 #+STARTUP: contents
 
 * 目次                                                                :TOC_3:
-- [[#パッケージの機能][パッケージの機能]]
+- [[#パッケージ機能のスケッチ][パッケージ機能のスケッチ]]
   - [[#自動テスト機能][自動テスト機能]]
     - [[#データの格納方法][データの格納方法]]
     - [[#ファイル命名規則][ファイル命名規則]]
@@ -27,10 +27,12 @@
   - [[#本バッケージ内部で使用するパッケージ][本バッケージ内部で使用するパッケージ]]
 - [[#開発][開発]]
   - [[#リロード--自動テスト][リロード & 自動テスト]]
+  - [[#内部データ][内部データ]]
   - [[#テストコード][テストコード]]
     - [[#テストファイル名][テスト/ファイル名]]
     - [[#テストファイルパス][テスト/ファイルパス]]
     - [[#テストデータタイプ調査漁獲物飼育][テスト/データタイプ（調査|漁獲物|飼育）]]
+    - [[#テスト種ごとの振る舞い][テスト/種ごとの振る舞い]]
     - [[#テストhdr-ファイルハンドリング][テスト/hdr ファイルハンドリング]]
     - [[#機能テスト][機能テスト]]
   - [[#関数][関数]]
@@ -39,7 +41,7 @@
     - [[#hdr-読み込み][hdr 読み込み]]
     - [[#統合関数][統合関数]]
 
-* パッケージの機能
+* パッケージ機能のスケッチ
 耳石日輪解析データにおいて継続的デプロイを実現する．
 データ更新をトリガーとして動作する
 ** 自動テスト機能
@@ -60,15 +62,16 @@
 - 日齢組成を描画
 * デモ
 ** 読み込むディレクトリを指定
-#+BEGIN_SRC R :results silent :exports code :session *R:tidyNAS*
+#+BEGIN_SRC R :results silent :exports code :session *R:otolithr*
   devtools::load_all("otolithr")
   path <- "/Users/ahayashi/Documents/GitHub/otolith/ratocB/Sardinops_melanostictus"
+  load_otolith(path)
 #+END_SRC
 
 ** .hdr ファイルを全て統合
 
 *** とりあえず使うには
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   otldata <- path %>%
     get_path() %>%
     get_dir2load() %>%
@@ -116,7 +119,7 @@ There were 50 or more warnings (use warnings() to see the first 50)
 #+end_example
 
 *** ファイルは標本を一意に特定できるように命名せよ
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
 df %>% dplyr::filter(!is.na(spcs)) %>% head()
 #+END_SRC
 
@@ -140,7 +143,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 
 ** 内部で使っている関数
 *** .hdr ファイルがある全ディレクトリのリストを作成する
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   dirs_org  <- get_path(path)
   head(dirs_org)
   tail(dirs_org)
@@ -167,7 +170,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 本パッケージでは，data/ 以下に入っている.hdrファイル以外は無視する
 理由: 日輪が不明瞭だったりして解析できなかった個体は，統合データを汚染するため．
 解析に含めないデータは data/ 内に残しておかず，cannot/ などに格納するようにする．
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   dirs2load <- dirs_org %>% get_dir2load()
   head(dirs2load)
   tail(dirs2load)
@@ -191,7 +194,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 [1] "データ統合から除外された個体は 9 個体．"
 #+end_example
 *** フルパスをファイル名に変換する
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   fnames    <- dirs2load %>%
     fullpath2fname()
   head(fnames)
@@ -213,7 +216,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 - reared
 のいずれかに格納されるべきである．
 **** 属性の取得
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   types     <- purrr::map(dirs2load, detect_type) %>% unlist()
   head(types)
   tail(types)
@@ -224,7 +227,7 @@ df %>% dplyr::filter(!is.na(spcs)) %>% head()
 : [6] "commercial"
 : [1] "survey" "survey" "survey" "survey" "survey" "survey"
 **** ファイル名に属性を付与
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   fnames_with_type <- purrr::map2(fnames, types, set_type)
   head(fnames_with_type, 2)
   tail(fnames_with_type, 2)
@@ -253,7 +256,7 @@ attr(,"class")
 #+end_example
 
 **** 属性に応じてファイル名から情報を取得
-#+BEGIN_SRC R :results output :exports both :session *R:tidyNAS*
+#+BEGIN_SRC R :results output :exports both :session *R:otolithr*
   info      <- purrr::map(fnames_with_type, get_info)
   str(info[[1]])
   str(info[[100]])
@@ -286,17 +289,27 @@ List of 6
  $ sampleno: int 11
 #+end_example
 * 追加予定の機能
-[[https://github.com/smxshxishxad/tidyNAS/issues][Issues]] にて随時募集中
+[[https://github.com/smxshxishxad/otolithr/issues][Issues]] にて随時募集中
 * 開発環境の整備
 ** ディレクトリ作成
 #+BEGIN_SRC R :results silent
   # usethis::create_package("otolithr")
+  # usethis::use_mit_license("Akira Hayashi")
+  # usethis::use_travis()
+  # usethis::use_coverage(type = "codecov")
+  # usethis::use_lifecycle_badge("experimental")
+  # usethis::use_pipe()
+  # usethis::use_vignette("gyokaikyor")
   #+END_SRC
 ** 本バッケージ内部で使用するパッケージ
 #+BEGIN_SRC R :results silent
-  usethis::use_package("magrittr", "Imports")
-  usethis::use_package("ggplot2", "Imports")
-  usethis::use_package("tibble", "Imports")
+  usethis::use_package("magrittr")
+  usethis::use_package("ggplot2")
+  usethis::use_package("tibble")
+  usethis::use_package("dplyr")
+  usethis::use_package("hash")
+  usethis::use_package("purrr")
+  usethis::use_package("stringr")
   usethis::use_testthat()
 #+END_SRC
 
@@ -325,39 +338,34 @@ Imports:
 
 * 開発
 ** リロード & 自動テスト
-#+BEGIN_SRC R :results output
-  setwd("otolithr")
+#+BEGIN_SRC R :results silent
+  devtools::document(roclets=c('rd', 'collate', 'namespace'))
   devtools::load_all()
   system("R CMD INSTALL --preclean --no-multiarch --with-keep.source .")
   devtools::test()
-  devtools::document(roclets=c('rd', 'collate', 'namespace'))
+  lintr::lint_package()
+  devtools::check(args = "--as-cran")
+  covr::package_coverage()
+
+  # Next task: dic_ageoffset をもとに，日齢オフセットを保持
 #+END_SRC
+** 内部データ
+#+begin_src R :results silent
+  tbl_ageoffset <- tibble::tribble(~spcsname, ~age.offset, ~reference,
+                                   "Sardinops-melanostictus", 2L, "foo",
+                                   "Engraulis-japonicus", 2L, "bar",
+                                   "Trachurus-japonicus", 2L, "Xie et al")
+  dic_ageoffset <- hash::hash(tbl_ageoffset$spcsname, tbl_ageoffset$age.offset)
+  usethis::use_data(dic_ageoffset,
+                    internal = TRUE, overwrite = TRUE)
+#+end_src
 
-#+RESULTS[62d4820a9216b105c72787e032f80205ff1ada32]:
-#+begin_example
-✔ | OK F W S | Context
-⠏ |  0       | Control behavior according to dattype⠋ |  1       | Control behavior according to dattype⠙ |  2       | Control behavior according to dattype⠹ |  3       | Control behavior according to dattype⠸ |  4       | Control behavior according to dattype⠼ |  5       | Control behavior according to dattype⠴ |  6       | Control behavior according to dattype⠦ |  7       | Control behavior according to dattype⠧ |  8       | Control behavior according to dattype⠇ |  9       | Control behavior according to dattype⠏ | 10       | Control behavior according to dattype⠋ | 11       | Control behavior according to dattype⠙ | 12       | Control behavior according to dattype⠹ | 13       | Control behavior according to dattype⠸ | 14       | Control behavior according to dattype⠼ | 15       | Control behavior according to dattype⠴ | 16       | Control behavior according to dattype⠦ | 17       | Control behavior according to dattype⠧ | 18       | Control behavior according to dattype⠇ | 19       | Control behavior according to dattype⠏ | 20       | Control behavior according to dattype⠋ | 21       | Control behavior according to dattype⠙ | 22       | Control behavior according to dattype⠹ | 23       | Control behavior according to dattype⠸ | 24       | Control behavior according to dattype✔ | 24       | Control behavior according to dattype
-⠏ |  0       | Handle file name⠋ |  1       | Handle file name⠙ |  2       | Handle file name⠹ |  3       | Handle file name⠸ |  4       | Handle file name⠼ |  5       | Handle file name⠴ |  6       | Handle file name⠦ |  7       | Handle file name⠧ |  8       | Handle file name⠇ |  9       | Handle file name⠏ | 10       | Handle file name⠋ | 11       | Handle file name⠙ | 12       | Handle file name⠹ | 13       | Handle file name⠸ | 14       | Handle file name⠼ | 15       | Handle file name⠴ | 16       | Handle file name⠦ | 17       | Handle file name⠧ | 18       | Handle file name⠇ | 19       | Handle file name⠏ | 20       | Handle file name⠋ | 21       | Handle file name⠙ | 22       | Handle file name⠹ | 23       | Handle file name✔ | 23       | Handle file name
-⠏ |  0       | Manage path⠋ |  1       | Manage path⠙ |  2       | Manage path⠹ |  3       | Manage path✔ |  3       | Manage path
-⠏ |  0       | Load .hdr file⠋ |  1       | Load .hdr file⠙ |  2       | Load .hdr file⠹ |  3       | Load .hdr file⠸ |  4       | Load .hdr file✔ |  4       | Load .hdr file
-⠏ |  0       | Functional test⠋ |  1       | Functional test✔ |  1       | Functional test
-
-══ Results ═════════════════════════════════════════════════════════════════════
-Duration: 0.1 s
-
-OK:       55
-Failed:   0
-Warnings: 0
-Skipped:  0
-Writing NAMESPACE
-Writing NAMESPACE
-#+end_example
 ** テストコード
 :PROPERTIES:
 :header-args: :results silent :exports code
 :END:
 *** テスト/ファイル名
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_fname.R
+#+BEGIN_SRC R :tangle tests/testthat/test_fname.R
   library(otolithr)
   context("Handle file name")
 
@@ -382,27 +390,27 @@ Writing NAMESPACE
   test_that("xtract_var() detects given variable in given vector", {
     fname <- "Sardinops-melanostictus_YK1808_MT01_005.hdr"
     expect_equal(xtract_var(fname, "spcsname"), "Sardinops-melanostictus")
-    expect_equal(xtract_var(fname, "cruise")  , "YK1808")
-    expect_equal(xtract_var(fname, "stn")     , "MT01")
+    expect_equal(xtract_var(fname, "cruise"), "YK1808")
+    expect_equal(xtract_var(fname, "stn"), "MT01")
     expect_equal(xtract_var(fname, "sampleno"), "005")
 
     fname <- "Sardinops-melanostictus_20150827_Toyama_Nakase_005.hdr"
     expect_equal(xtract_var(fname, "spcsname"), "Sardinops-melanostictus")
-    expect_equal(xtract_var(fname, "date")    , "20150827")
-    expect_equal(xtract_var(fname, "key1")    , "Toyama")
-    expect_equal(xtract_var(fname, "key2")    , "Nakase")
+    expect_equal(xtract_var(fname, "date"), "20150827")
+    expect_equal(xtract_var(fname, "key1"), "Toyama")
+    expect_equal(xtract_var(fname, "key2"), "Nakase")
     expect_equal(xtract_var(fname, "sampleno"), "005")
 
     fname <- "Sardinops-melanostictus_20150827_Toyama_005.hdr"
     expect_equal(xtract_var(fname, "spcsname"), "Sardinops-melanostictus")
-    expect_equal(xtract_var(fname, "date")    , "20150827")
-    expect_equal(xtract_var(fname, "key1")    , "Toyama")
+    expect_equal(xtract_var(fname, "date"), "20150827")
+    expect_equal(xtract_var(fname, "key1"), "Toyama")
     expect_true(is.na(xtract_var(fname, "key2")))
     expect_equal(xtract_var(fname, "sampleno"), "005")
   })
 #+END_SRC
 *** テスト/ファイルパス
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_fpath.R
+#+BEGIN_SRC R :tangle tests/testthat/test_fpath.R
   library(otolithr)
   context("Manage path")
 
@@ -435,11 +443,11 @@ Writing NAMESPACE
   })
 #+END_SRC
 *** テスト/データタイプ（調査|漁獲物|飼育）
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_dattype.R
+#+BEGIN_SRC R :tangle tests/testthat/test_dattype.R
   library(otolithr)
   context("Control behavior according to dattype")
 
-  test_that("set_type() gives type to fname correctly", {
+  test_that("set_type() gives dattype class to fname correctly", {
     expect_is(set_type("foo.hdr", "survey"), "survey")
     expect_is(set_type("foo.hdr", "commercial"), "commercial")
     expect_error(set_type("foo.hdr", "bar"),
@@ -484,14 +492,27 @@ Writing NAMESPACE
     path_reared     <- "foo/reared/bar.hdr"
     path_error      <- "foo/bar.hdr"
     msg <- "Dir structure error. Run 'help(detect_type)'."
-    expect_equal(detect_type(path_survey),"survey")
-    expect_equal(detect_type(path_commercial),"commercial")
-    expect_equal(detect_type(path_reared),"reared")
+    expect_equal(detect_type(path_survey), "survey")
+    expect_equal(detect_type(path_commercial), "commercial")
+    expect_equal(detect_type(path_reared), "reared")
     expect_error(detect_type(path_error), msg, fix = TRUE)
   })
 #+END_SRC
+*** テスト/種ごとの振る舞い
+#+begin_src R :tangle tests/testthat/test_spcs.R
+  test_that("set_spcsname() give spcs name class correctly", {
+    fname <- "foo"
+    expect_is(set_spcsname(fname, "Sardinops-melanostictus"),
+              "Sardinops-melanostictus")
+    expect_is(set_spcsname(fname, "Engraulis-japonicus"),
+              "Engraulis-japonicus")
+    expect_is(set_spcsname(fname, "Trachurus-japonicus"),
+              "Trachurus-japonicus")
+  })
+
+#+end_src
 *** テスト/hdr ファイルハンドリング
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_handle_hdr.R
+#+BEGIN_SRC R :tangle tests/testthat/test_handle_hdr.R
   context("Load .hdr file")
 
   infile   <-
@@ -501,6 +522,8 @@ Writing NAMESPACE
                  "緯度", "経度", "表面水温", "体長", "体重", "耳石径", "耳左右",
                  "計測者番号", "日輪数", "lens", "calib", "unit",
                  "samplesize", "filename", "日輪幅")
+  dummy <- data.frame(V1 = append(varnames, 1:10),
+                      V2 = rep("foo", length.out = length(varnames) + 10))
 
   test_that("load_hdr() reads '.hdr' file correctly", {
     expect_is(data, "data.frame")
@@ -512,36 +535,43 @@ Writing NAMESPACE
   })
 
   test_that("get_incdata() returns incdata", {
-    expect_equal(get_incdata(append(varnames, 1:10)), 1:10)
+    expect_equal(get_incdata(dummy), 1:10)
   })
 #+END_SRC
 *** 機能テスト
-#+BEGIN_SRC R :tangle otolithr/tests/testthat/test_load_otolith.R
+#+BEGIN_SRC R :tangle tests/testthat/test_load_otolith.R
   context("Functional test")
 
   indir      <- "../Genus-spcs"
   paths      <- get_path(indir)
   paths2load <- get_dir2load(paths)[1]
-  data       <- load_otolith(paths2load)
 
-  test_that("load_otolith() loads otolith data", {
+  test_that("load_otolith() loads otolith data from relative path", {
+    data <- load_otolith(paths2load)
+    expect_is(data$ninc, "integer")
+  })
+
+  test_that("load_otolith() loads otolith data being given 'type' manually", {
+    data <- load_otolith("../Sardinops-melanostictus_foo_MT01_01.hdr",
+                         "survey")
+    expect_is(data$ninc, "integer")
+    data <- load_otolith("../Sardinops-melanostictus_20160629_minato_002.hdr",
+                         "commercial")
+    expect_is(data$ninc, "integer")
+
+    data  <- load_otolith("../Sardinops-melanostictus_20160909_temp24_10.hdr",
+                          "reared")
     expect_is(data$ninc, "integer")
   })
 #+END_SRC
 ** 関数
 *** ヘルパー関数
-#+BEGIN_SRC R :tangle otolithr/R/util.R :results silent
-  #' @importFrom magrittr %>%
-  #' @export
-  magrittr::`%>%`
-
-
-
+#+BEGIN_SRC R :tangle R/util.R :results silent
   rm_extension <- function(x, extension = ".hdr") {
     if (gregexpr("^[a-zA-Z]+", extension) > 0)
       stop("'extension' must begin with '.'")
     regex <- paste0("\\", extension)
-    out   <- sub(regex, "", x)
+    sub(regex, "", x)
   }
 
   split_fname <- function(fname, sep = "_") {
@@ -554,7 +584,7 @@ Writing NAMESPACE
 
   detect_type <- function(fpath) {
     regex <- "(survey|commercial|reared)"
-    type  <- stringr::str_match(fpath, regex)[,2]
+    type  <- stringr::str_match(fpath, regex)[, 2]
     if (is.na(type))
       stop("Dir structure error. Run 'help(detect_type)'.")
     type
@@ -564,6 +594,11 @@ Writing NAMESPACE
     if (!(type %in% c("survey", "commercial", "reared")))
       stop("'type' must be one of 'survey', 'commercial', or 'reared'.")
     class(fname) <- type
+    fname
+  }
+
+  set_spcsname <- function(fname, spcsname) {
+    class(fname) <- spcsname
     fname
   }
 
@@ -581,7 +616,7 @@ Writing NAMESPACE
       "fname"    = regex <- "(^.+$)",
       stop(paste0("Unexpected variable '", eval(bquote(var)), "' was given."))
     )
-    out <- stringr::str_match(fname, regex)[,2]
+    out <- stringr::str_match(fname, regex)[, 2]
     out
   }
 
@@ -630,7 +665,7 @@ Writing NAMESPACE
 #+END_SRC
 
 *** ファイルパス
-#+BEGIN_SRC R :tangle otolithr/R/fpath.R
+#+BEGIN_SRC R :tangle R/fpath.R
   get_path <- function(dir.spcs) {
     regex <- ".+hdr$"
     fullpaths <- list.files(dir.spcs, pattern = regex,
@@ -639,12 +674,12 @@ Writing NAMESPACE
   }
 
   fullpath2fname <- function(full.path) {
-    regex <- "/([^/]+\\.hdr)$"
+    regex <- "/([^/]+\\.hdr)$" # nolint
     if (length(full.path) == 1) {
       fname <- stringr::str_match(full.path, regex)[2]
     } else {
       match_res <- purrr::map2(full.path, regex, stringr::str_match) %>% unlist()
-      fname     <- match_res[!(1:length(match_res))%%2]
+      fname     <- match_res[!(1:length(match_res)) %% 2]
     }
     fname
   }
@@ -661,37 +696,39 @@ Writing NAMESPACE
 #+RESULTS:
 
 *** hdr 読み込み
-#+BEGIN_SRC R :tangle otolithr/R/handle_hdr.R :results silent
+#+BEGIN_SRC R :tangle R/handle_hdr.R :results silent
   load_hdr <- function(fname){
-    read.csv(fname, fileEncoding = "CP932",
-             header = FALSE, stringsAsFactors = FALSE)
+    utils::read.csv(fname, fileEncoding = "CP932",
+                    header = FALSE, stringsAsFactors = FALSE)
   }
 
   locate_1stinc <- function(x) {
     which(x == "日輪幅") + 1 # Data of 1stinc is located just after "日輪幅".
   }
 
-  get_incdata <- function(x) {
-    str <- x
-    out <- as.numeric(str[locate_1stinc(x):length(str)])
+  get_incdata <- function(hdrdata) {
+    x   <- as.character(hdrdata$V1)
+    out <- x[locate_1stinc(x):length(x)] %>%
+      as.numeric()
     out
   }
 #+END_SRC
 
 *** 統合関数
-#+BEGIN_SRC R :tangle otolithr/R/load_otolith.R :results silent
+#+BEGIN_SRC R :tangle R/load_otolith.R :results silent
   make_data <- function(fname, fname_with_type) {
-    data     <- load_hdr(fname)
-    out      <- get_info(fname_with_type)
-    out$inc  <- get_incdata(data$V1)
+    data         <- load_hdr(fname)
+    out          <- get_info(fname_with_type)
+    out$inc      <- get_incdata(data)
     out$radius   <- cumsum(out$inc)
-    out$ninc  <- length(out$iw)
+    out$ninc     <- length(out$inc)
+    out$age.ofst <- dic_ageoffset[[out$spcs]]
     out
   }
 
-
-  load_otolith <- function(dir) {
-    type            <- detect_type(dir)
+  load_otolith <- function(dir, type = NULL) {
+    if (is.null(type))
+      type <- detect_type(dir)
     fname_with_type <- fullpath2fname(dir) %>%
       set_type(type)
     out <- make_data(dir, fname_with_type)
