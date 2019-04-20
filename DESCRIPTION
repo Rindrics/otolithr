@@ -14,4 +14,8 @@ Suggests:
 Imports: 
     magrittr,
     ggplot2,
-    dplyr
+    dplyr,
+    tibble,
+    hash,
+    purrr,
+    stringr

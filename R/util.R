@@ -1,14 +1,8 @@
-#' @importFrom magrittr %>%
-#' @export
-magrittr::`%>%`
-
-
-
 rm_extension <- function(x, extension = ".hdr") {
   if (gregexpr("^[a-zA-Z]+", extension) > 0)
     stop("'extension' must begin with '.'")
   regex <- paste0("\\", extension)
-  out   <- sub(regex, "", x)
+  sub(regex, "", x)
 }
 
 split_fname <- function(fname, sep = "_") {
@@ -21,7 +15,7 @@ split_fname <- function(fname, sep = "_") {
 
 detect_type <- function(fpath) {
   regex <- "(survey|commercial|reared)"
-  type  <- stringr::str_match(fpath, regex)[,2]
+  type  <- stringr::str_match(fpath, regex)[, 2]
   if (is.na(type))
     stop("Dir structure error. Run 'help(detect_type)'.")
   type
@@ -53,7 +47,7 @@ xtract_var <- function(fname, var) {
     "fname"    = regex <- "(^.+$)",
     stop(paste0("Unexpected variable '", eval(bquote(var)), "' was given."))
   )
-  out <- stringr::str_match(fname, regex)[,2]
+  out <- stringr::str_match(fname, regex)[, 2]
   out
 }
 

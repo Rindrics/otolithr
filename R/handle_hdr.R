@@ -1,6 +1,6 @@
 load_hdr <- function(fname){
-  read.csv(fname, fileEncoding = "CP932",
-           header = FALSE, stringsAsFactors = FALSE)
+  utils::read.csv(fname, fileEncoding = "CP932",
+                  header = FALSE, stringsAsFactors = FALSE)
 }
 
 locate_1stinc <- function(x) {

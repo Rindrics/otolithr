@@ -46,8 +46,8 @@ test_that("detect_type() detects dattype correctly", {
   path_reared     <- "foo/reared/bar.hdr"
   path_error      <- "foo/bar.hdr"
   msg <- "Dir structure error. Run 'help(detect_type)'."
-  expect_equal(detect_type(path_survey),"survey")
-  expect_equal(detect_type(path_commercial),"commercial")
-  expect_equal(detect_type(path_reared),"reared")
+  expect_equal(detect_type(path_survey), "survey")
+  expect_equal(detect_type(path_commercial), "commercial")
+  expect_equal(detect_type(path_reared), "reared")
   expect_error(detect_type(path_error), msg, fix = TRUE)
 })
