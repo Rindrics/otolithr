@@ -65,6 +65,7 @@
 #+BEGIN_SRC R :results silent :exports code :session *R:otolithr*
   devtools::load_all("otolithr")
   path <- "/Users/ahayashi/Documents/GitHub/otolith/ratocB/Sardinops_melanostictus"
+  load_otolith(path)
 #+END_SRC
 
 ** .hdr ファイルを全て統合
@@ -544,9 +545,22 @@ Imports:
   indir      <- "../Genus-spcs"
   paths      <- get_path(indir)
   paths2load <- get_dir2load(paths)[1]
-  data       <- load_otolith(paths2load)
 
-  test_that("load_otolith() loads otolith data", {
+  test_that("load_otolith() loads otolith data from relative path", {
+    data <- load_otolith(paths2load)
+    expect_is(data$ninc, "integer")
+  })
+
+  test_that("load_otolith() loads otolith data being given 'type' manually", {
+    data <- load_otolith("../Sardinops-melanostictus_foo_MT01_01.hdr",
+                         "survey")
+    expect_is(data$ninc, "integer")
+    data <- load_otolith("../Sardinops-melanostictus_20160629_minato_002.hdr",
+                         "commercial")
+    expect_is(data$ninc, "integer")
+
+    data  <- load_otolith("../Sardinops-melanostictus_20160909_temp24_10.hdr",
+                          "reared")
     expect_is(data$ninc, "integer")
   })
 #+END_SRC
@@ -712,9 +726,9 @@ Imports:
     out
   }
 
-
-  load_otolith <- function(dir) {
-    type            <- detect_type(dir)
+  load_otolith <- function(dir, type = NULL) {
+    if (is.null(type))
+      type <- detect_type(dir)
     fname_with_type <- fullpath2fname(dir) %>%
       set_type(type)
     out <- make_data(dir, fname_with_type)

@@ -8,9 +8,9 @@ make_data <- function(fname, fname_with_type) {
   out
 }
 
-
-load_otolith <- function(dir) {
-  type            <- detect_type(dir)
+load_otolith <- function(dir, type = NULL) {
+  if (is.null(type))
+    type <- detect_type(dir)
   fname_with_type <- fullpath2fname(dir) %>%
     set_type(type)
   out <- make_data(dir, fname_with_type)
