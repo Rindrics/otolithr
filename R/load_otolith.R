@@ -5,6 +5,7 @@ make_data <- function(fname, fname_with_type) {
   out$radius   <- cumsum(out$inc)
   out$ninc     <- length(out$inc)
   out$age.ofst <- dic_ageoffset[[out$spcs]]
+  out$age      <- out$ninc + out$age
   out
 }
 
@@ -14,5 +15,5 @@ load_otolith <- function(dir, type = NULL) {
   fname_with_type <- fullpath2fname(dir) %>%
     set_type(type)
   out <- make_data(dir, fname_with_type)
-  out
+  invisible(out)
 }
