@@ -63,21 +63,36 @@
 * デモ
 ** 読み込むディレクトリを指定
 #+BEGIN_SRC R :results silent :exports code :session *R:otolithr*
-  devtools::load_all("otolithr")
+  devtools::load_all()
   path <- "/Users/ahayashi/Documents/GitHub/otolith/ratocB/Sardinops_melanostictus"
-  load_otolith(path)
 #+END_SRC
 
 ** .hdr ファイルを全て統合
 
 *** とりあえず使うには
 #+BEGIN_SRC R :results output :exports both :session *R:otolithr*
+  library(magrittr)
+  library(dplyr)
+  library(plyr)
+  library(ggplot2)
   otldata <- path %>%
     get_path() %>%
     get_dir2load() %>%
     purrr::map(load_otolith)
 
-  df      <- purrr::map_dfr(otldata, as.data.frame)
+  otldata %>%
+    purrr::map_df(as.data.frame) %>%
+    dplyr::filter(is.na(age))
+
+  otldata %>% purrr::map_df(as.data.frame) %>%
+    tibble::as_tibble() %>%
+    group_by(fname) %>%
+    tidyr::nest()
+
+  listOfVectors <- lapply(lapply(otldata, unlist), "[",
+                          unique(unlist(c(sapply(otldata,names)))))
+  df <- do.call(rbind, listOfVectors)
+
   head(df)
   tail(df)
   print(paste("統合したファイルの数は", length(unique(df$fname)), "個"))
@@ -723,6 +738,7 @@ Imports:
     out$radius   <- cumsum(out$inc)
     out$ninc     <- length(out$inc)
     out$age.ofst <- dic_ageoffset[[out$spcs]]
+    out$age      <- out$ninc + out$age
     out
   }
 
@@ -732,6 +748,6 @@ Imports:
     fname_with_type <- fullpath2fname(dir) %>%
       set_type(type)
     out <- make_data(dir, fname_with_type)
-    out
+    invisible(out)
   }
 #+END_SRC
