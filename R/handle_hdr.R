@@ -36,6 +36,7 @@ hdr2df <- function(path, species, pick_rank = NULL) {
   inc_width <- extract_incwidth(hdr)
   incno     <- as.integer(1:length(inc_width))
   data <- tibble::tibble(ID = get_id(path),
+                         BL_mm = as.numeric(extract_var(hdr, "体長")),
                          IncNo = incno,
                          iAge = inc2age(IncNo, species = species),
                          Species = species,
