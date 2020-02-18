@@ -24,7 +24,7 @@
 ## 使い方
 
 ### インストール
-以下をRのコンソールに打ち込んでください
+以下をRのコンソールに入力して下さい
 ```
 # install.packages("devtools")   # If package 'devtools' is not installed to your machine
 devtools::install_github("akikirinrin/otolithr")
