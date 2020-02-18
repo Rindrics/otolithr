@@ -8,9 +8,12 @@ plot <- function(x) {
 #' @param df_otolith Tidy otolith data made by \code{hdr2df_in_dir}
 #' @export
 plot.otolith <- function(df_otolith) {
-  df_otolith %>%
-    dplyr::group_by(ID, Age) %>%
-    dplyr::summarize(OR = max(OR_microm)) %>%
-    ggplot2::ggplot(ggplot2::aes(Age, OR, color = ID, label = ID)) +
-    ggplot2::geom_point()
+  p <- df_otolith %>%
+    dplyr::group_by(ID, Age, BL_mm) %>%
+    dplyr::summarize(OR_microm = max(OR_microm)) %>%
+    plotly::plot_ly(x = ~Age, y = ~OR_microm, type = 'scatter',
+                   mode = 'markers', hoverinfo = text,
+                   text = ~paste('ID: ', ID,
+                                '</br> BL_mm: ', BL_mm))
+  p
 }

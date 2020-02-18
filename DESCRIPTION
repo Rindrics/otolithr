@@ -18,4 +18,5 @@ Imports:
     tibble,
     hash,
     purrr,
-    stringr
+    stringr,
+    plotly
