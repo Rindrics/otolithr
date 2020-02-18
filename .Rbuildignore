@@ -4,3 +4,4 @@
 \.Rproj$
 \.org$
 
+^\.Rproj\.user$
