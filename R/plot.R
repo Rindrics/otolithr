@@ -1,3 +1,4 @@
+#' @export
 plot <- function(x) {
   UseMethod("plot")
 }
