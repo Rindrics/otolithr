@@ -3,7 +3,7 @@
 [![codecov](https://codecov.io/gh/kikirinrin/otolithr/branch/master/graph/badge.svg)](https://codecov.io/gh/kikirinrin/otolithr)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
-![example](https://gist.github.com/akikirinrin/1949f96742cbd8ba4396cf57657888d0#file-example-png)
+![example](https://gist.githubusercontent.com/akikirinrin/1949f96742cbd8ba4396cf57657888d0/raw/9bccbc1e775c5fa16fbe4d5ecfb79a00fe551a52/example.png)
 
 ## 目的
 成長解析の手順を属人化させないためのパッケージです
