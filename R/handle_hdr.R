@@ -43,8 +43,10 @@ hdr2df <- function(path, species, pick_rank = NULL) {
                          IncWidth_microm = inc_width,
                          OR_microm = cumsum(inc_width)) %>%
     dplyr::mutate(Age = max(iAge))
+
+  class(data) <- c(class(data), "otolith")
   if (is.null(pick_rank)) return(data)
-  return(dplyr::mutate(data, Rank = locate_rank(hdr, pick_rank)))
+  dplyr::mutate(data, Rank = locate_rank(hdr, pick_rank))
 }
 
 #' @export
