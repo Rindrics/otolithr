@@ -93,3 +93,5 @@ get_info.reared <- function(fname) {
     as.integer()
   out
 }
+
+`%not_in%` <- purrr::negate(`%in%`)

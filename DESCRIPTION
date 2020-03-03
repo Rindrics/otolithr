@@ -10,7 +10,9 @@ LazyData: true
 RoxygenNote: 7.0.2
 Suggests: 
     testthat,
-    covr
+    covr,
+    knitr,
+    rmarkdown
 Imports: 
     magrittr,
     ggplot2,
@@ -20,3 +22,4 @@ Imports:
     purrr,
     stringr,
     plotly
+VignetteBuilder: knitr

@@ -1,0 +1,241 @@
+---
+title: "Demo"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Demo}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 8,
+  fig.height = 6,
+  out.width = "100%",
+  out.height = "100%"
+)
+library(otolithr)
+library(dplyr)
+library(ggplot2)
+library(plotly)
+library(ggrepel)
+library(gghighlight)
+devtools::load_all()
+```
+
+# 準備
+```{r setup}
+library(otolithr)
+
+data(measure)  # 精密測定データ
+data(stations) # トロール調査結果
+```
+
+
+```{r, echo = FALSE}
+exclude_list <- c("YK1608_MT10_12", # 縁辺部が不明瞭だったため読めなかった
+                  "YK1608_MT10_20", # 研磨が足りなかった。後日再解析する予定
+                  "YK1608_MT14_16", # ...
+                  "YK1608_MT11_2",
+                  "YK1608_MT11_5",
+                  "YK1611_B4_1",
+                  "YK1611_B4_1_hayashi",
+                  "YK1611_B4_1_shiki",
+                  "YK1611_C1_5",
+                  "YK1611_C1_7",
+                  "YK1611_C1_9",
+                  "YK1611_C1_10",
+                  "YK1611_C1_11",
+                  "YK1611_C1_13",
+                  "YK1611_C2_3",
+                  "YK1611_C2_3_shiki",
+                  "YK1611_C2_4",
+                  "YK1611_C2_4_shiki",
+                  "YK1611_C2_5",
+                  "YK1611_C2_5_shiki",
+                  "YK1611_C2_6",
+                  "YK1611_C2_6_2",
+                  "YK1611_C2_6_shiki",
+                  "YK1611_C2_7",
+                  "YK1611_C2_7_shiki",
+                  "YK1611_C2_10",
+                  "YK1611_C2_10_shiki",
+                  "YK1611_C2_15")
+```
+
+# データ整形
+## `.hdr`ファイルってなんだっけ
+
+これ↓
+```
+標本番号,MT5_016
+採集航海番号,ship
+採集ｽﾃｰｼｮﾝ番号,station
+採集日付,01/05/11-21:46
+緯度,N43
+経度,E146
+表面水温,10.000000
+体長,20.000000
+体重,0.000000
+耳石径,33.300000
+耳左右,0
+計測者番号,01
+日輪数,164
+lens,50
+calib,1.151880
+unit,0.100000
+samplesize,20000
+filename,C:\Documents and Settings\ahayashi\My Documents\ratoc_b\Sardinops_melanostictus\YK1611\data\MT5_016
+日輪幅, ランク
+11.502, A
+3.000, A
+2.200, A
+3.002, A
+3.102, A
+2.900, A
+3.901, A
+3.700, A
+```
+
+## 複数の`.hdr`ファイルをデータフレームに変換
+```{r, warning = FALSE}
+sample_data <- hdr2df_in_dir("../data-raw/otolith/YK1308", species = "maiwashi")
+```
+
+## ざっと眺める
+```{r}
+sample_data
+unique(sample_data$ID)
+```
+
+## プロットしてみる
+```{r}
+plot(sample_data)
+```
+  
+## つまりどういうこと？
+データからプロットまでが一筆書きでつながるということ
+```{r}
+"../data-raw/otolith/YK1308" %>%
+  hdr2df_in_dir(species = "maiwashi") %>%
+  plot()
+```
+  
+メリット: 手違いがなくなる
+
+言い換えると:
+- 自由度 = 0
+- トヨタ生産方式
+- 関数プログラミング
+  
+<br><br>
+
+# 体長逆算までやってみよう
+
+## 4年分のデータを結合
+
+```{r, eval = FALSE}
+otolith_data <- bind_rows(hdr2df_in_dir("../data-raw/otolith/YK1308", species = "maiwashi"),
+                           hdr2df_in_dir("../data-raw/otolith/YK1509", species = "maiwashi"),
+                           hdr2df_in_dir("../data-raw/otolith/YK1608", species = "maiwashi"),
+                           hdr2df_in_dir("../data-raw/otolith/YK1611", species = "maiwashi")) %>%
+  back_calculate(df_measure = measure)
+```
+
+```{r, warning = FALSE, echo = FALSE, message = FALSE}
+yk1308 <- hdr2df_in_dir("../data-raw/otolith/YK1308", species = "maiwashi") %>%
+  mutate(Cruise = "YK1308")
+yk1509 <- hdr2df_in_dir("../data-raw/otolith/YK1509", species = "maiwashi") %>%
+  mutate(Cruise = "YK1509") %>%
+  tidyr::separate(ID, into = c("Species", "Cruise", "Station", "SampleNo"), sep = "_") %>%
+  dplyr::mutate(ID = paste(Station, SampleNo, sep = "_"),
+                Species = "maiwashi")
+yk1608 <- hdr2df_in_dir("../data-raw/otolith/YK1608", species = "maiwashi") %>%
+  mutate(Cruise = "YK1608")
+yk1611 <- hdr2df_in_dir("../data-raw/otolith/YK1611", species = "maiwashi") %>%
+  mutate(Cruise = "YK1611")
+
+otolith_data <- bind_rows(yk1308,
+                          yk1509,
+                          yk1608,
+                          yk1611) %>%
+  mutate(ID = paste0(Cruise, "_", ID) %>%
+                stringr::str_replace("_0+([1-9])", "_\\1")) %>%
+  dplyr::mutate(ID2 = ID) %>%
+  dplyr::select(-BL_mm) %>%
+  tidyr::separate(ID2, into = c("Cruise", "Station", "SampleNo")) %>%
+  dplyr::mutate(CruiseStation = paste(Cruise, Station, sep = "_"),
+                SampleNo = as.integer(SampleNo)) %>%
+  filter(ID %not_in% exclude_list) %>%
+  dplyr::left_join(stations) %>%
+  dplyr::mutate(DateHatched = DateCollected - Age,
+                FiscalYr = as.numeric(paste0(20, substr(Cruise, 3, 4))),
+                Day1_FiscalYr = as.Date(paste(FiscalYr, "01", "01", sep = "-")),
+                DateHatched_jday = DateHatched - Day1_FiscalYr) %>%
+  dplyr::select(-Cruise) %>%
+  back_calculate(measure)
+```
+
+## プロットしてみる
+```{r, out.width = "100%"}
+
+plot <- otolith_data %>%
+  group_by(ID, Age, SL_mm, Cruise) %>%
+  summarize(OR_microm = max(OR_microm)) %>%
+  plot_ly(x = ~OR_microm, y = ~SL_mm, color = ~Cruise, type = 'scatter',
+        mode = 'markers', hoverinfo = text,
+        text = ~paste('ID: ', ID,
+                      '</br> SL_mm: ', SL_mm))
+plot
+```
+
+<br><br>
+
+# 今後の関数化候補
+理由: よく使うから
+
+## 日輪間隔履歴
+```{r}
+otolith_data %>%
+  ggplot(aes(iAge, IncWidth_microm, group = ID, color = Cruise)) +
+  geom_line(size = 0.5, alpha = 0.05) +
+  facet_wrap(~ Cruise) +
+  gghighlight(use_direct_label = FALSE)
+
+```
+
+## 日齢組成
+```{r}
+otolith_data %>%
+  dplyr::filter(IncNo == 1, !is.na(Cruise)) %>%
+  ggplot(aes(Age, fill = Cruise)) +
+  geom_histogram() +
+  facet_grid(Cruise ~ .)
+```
+
+## 年の違うデータの孵化日組成
+```{r}
+otolith_data %>%
+  dplyr::filter(IncNo == 1) %>%
+  ggplot(aes(DateHatched, fill = Cruise)) +
+  geom_histogram() +
+  facet_wrap(~ Cruise, scales = "free_x")
+
+otolith_data %>%
+  dplyr::filter(IncNo == 1) %>%
+  ggplot(aes(DateHatched_jday, fill = Cruise)) +
+  geom_histogram() +
+  facet_grid(Cruise ~ ., scales = "free_x")
+```
+
+## 体長成長履歴
+```{r}
+otolith_data %>%
+  dplyr::filter(!is.na(Cruise)) %>%
+  ggplot(aes(iAge, BackCalSL_mm, group = ID, color = Cruise)) +
+  geom_line() +
+  facet_wrap(~ Cruise) +
+  gghighlight(use_direct_label = FALSE)
+```

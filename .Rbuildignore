@@ -5,3 +5,4 @@
 \.org$
 
 ^\.Rproj\.user$
+^data-raw$
