@@ -18,7 +18,7 @@ extract_var <- function(hdr, varname) {
 }
 
 locate_1stinc    <- function(ratoc.hdr) {
-  locate_var(ratoc.hdr, "日輪幅") + 1
+  locate_var(ratoc.hdr, "\u65e5\u8f2a\u5e45") + 1
 }
 
 extract_incwidth <- function(ratocdata) {
@@ -31,24 +31,50 @@ inc2age <- function(incno, species = NULL) {
          "maaji" = incno + 2)
 }
 
+#' Convert `.hdr` file into data frame
+#' @param path Path of the target hdr file
+#' @param species Species in romaji
+#' @param pick_rank `Rank` (A, B, C, etc.) to find location
+#' @examples
+#' \dontrun{
+#'   hdr2df("PATH_TO_HDR_FILE/sample.hdr", species = "maiwashi")
+#'   hdr2df("PATH_TO_HDR_FILE/sample.hdr",
+#'          species   = "maiwashi",
+#'          pick_rank = "C")
+#' }
+#' @export
 hdr2df <- function(path, species, pick_rank = NULL) {
   hdr       <- read_hdr(path)
   inc_width <- extract_incwidth(hdr)
   incno     <- as.integer(1:length(inc_width))
   data <- tibble::tibble(ID = get_id(path),
-                         BL_mm = as.numeric(extract_var(hdr, "体長")),
+                         BL_mm = as.numeric(extract_var(hdr, "\u4f53\u9577")),
                          IncNo = incno,
                          iAge = inc2age(IncNo, species = species),
                          Species = species,
                          IncWidth_microm = inc_width,
-                         OR_microm = cumsum(inc_width)) %>%
+                         OR_microm = cumsum(inc_width),
+                         BackCalBL_mm = back_calculate(
+                           bl_at_catch = BL_mm,
+                           orvec       = OR_microm,
+                           species     = species)) %>%
     dplyr::mutate(Age = max(iAge))
+
+  confirm_data_format(data)
 
   class(data) <- c(class(data), "otolith")
   if (is.null(pick_rank)) return(data)
   dplyr::mutate(data, Rank = locate_rank(hdr, pick_rank))
 }
 
+#' Tidy all `.hdr`s into a single df in given directory
+#'
+#' @inheritParams hdr2df
+#' @param dir Target directory which contains `.hdr` files
+#' @examples
+#' \dontrun{
+#'   hdr2df_in_dir("PATH_TO_HDR_FILE", species = "maiwashi")
+#' }
 #' @export
 hdr2df_in_dir <- function(dir, species, pick_rank = NULL) {
   filelist <- list.files(dir, pattern = ".+\\.hdr$", full.names = TRUE)
