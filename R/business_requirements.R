@@ -1,5 +1,6 @@
 generate_mock <- function() {
   data.frame(ID              = NA,
+             DateCollected   = NA,
              BL_mm           = NA,
              IncNo           = NA,
              iAge            = NA,
@@ -7,7 +8,8 @@ generate_mock <- function() {
              IncWidth_microm = NA,
              OR_microm       = NA,
              BackCalBL_mm    = NA,
-             Age             = NA)
+             Age             = NA,
+             DateHatched     = NA)
 }
 
 confirm_data_format <- function(df) {

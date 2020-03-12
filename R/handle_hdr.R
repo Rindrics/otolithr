@@ -31,6 +31,11 @@ inc2age <- function(incno, species = NULL) {
          "maaji" = incno + 2)
 }
 
+format_date <- function(hdr) {
+  string <- extract_var(hdr, "\u63a1\u96c6\u65e5\u4ed8")
+  as.Date(paste0(20, substr(string, 1, 8)))
+}
+
 #' Convert `.hdr` file into data frame
 #' @param path Path of the target hdr file
 #' @param species Species in romaji
@@ -47,18 +52,22 @@ hdr2df <- function(path, species, pick_rank = NULL) {
   hdr       <- read_hdr(path)
   inc_width <- extract_incwidth(hdr)
   incno     <- as.integer(1:length(inc_width))
-  data <- tibble::tibble(ID = get_id(path),
-                         BL_mm = as.numeric(extract_var(hdr, "\u4f53\u9577")),
-                         IncNo = incno,
-                         iAge = inc2age(IncNo, species = species),
-                         Species = species,
-                         IncWidth_microm = inc_width,
-                         OR_microm = cumsum(inc_width),
-                         BackCalBL_mm = back_calculate(
-                           bl_at_catch = BL_mm,
-                           orvec       = OR_microm,
-                           species     = species)) %>%
-    dplyr::mutate(Age = max(iAge))
+  data <- tibble::tibble(
+    ID              = get_id(path),
+    DateCollected   = format_date(hdr),
+    BL_mm           = as.numeric(extract_var(hdr, "\u4f53\u9577")),
+    IncNo           = incno,
+    iAge            = inc2age(IncNo, species = species),
+    Species         = species,
+    IncWidth_microm = inc_width,
+    OR_microm       = cumsum(inc_width),
+    BackCalBL_mm    = back_calculate(
+      bl_at_catch = BL_mm,
+      orvec       = OR_microm,
+      species     = species)
+  ) %>%
+    dplyr::mutate(Age         = max(iAge),
+                  DateHatched = DateCollected - Age)
 
   confirm_data_format(data)
 
