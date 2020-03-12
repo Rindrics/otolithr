@@ -3,10 +3,6 @@
 [![codecov](https://codecov.io/gh/akikirinrin/otolithr/branch/master/graph/badge.svg)](https://codecov.io/gh/akikirinrin/otolithr)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
-![example](https://gist.githubusercontent.com/akikirinrin/1949f96742cbd8ba4396cf57657888d0/raw/9bccbc1e775c5fa16fbe4d5ecfb79a00fe551a52/example.png)
-
-![plot](https://gist.githubusercontent.com/akikirinrin/1949f96742cbd8ba4396cf57657888d0/raw/9bccbc1e775c5fa16fbe4d5ecfb79a00fe551a52/plot.png)
-
 ## 目的
 成長解析の手順を属人化させないためのパッケージです。
 
@@ -19,7 +15,7 @@
 
 関数の挙動や生成されるデータフレームの列名などの様式は、あくまでも現時点におけるたたき台です。
 
-使いにくいところ、気に食わないところなど、どんどんお寄せ下さい。
+使いにくいところ、気に食わないところなど、[Issues](https://github.com/akikirinrin/otolithr/issues)にどんどんお寄せ下さい。
 
 ## 使い方
 
