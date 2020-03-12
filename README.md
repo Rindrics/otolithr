@@ -18,6 +18,7 @@
 使いにくいところ、気に食わないところなど、[Issues](https://github.com/akikirinrin/otolithr/issues)にどんどんお寄せ下さい。
 
 ## 使い方
+インストール方法は[こちら](https://github.com/akikirinrin/otolithr/wiki/インストール方法)
 
 ```
 path <- "YOUR_PATH_TO_HDR_FILES"                  # .hdr ファイルが入ったNASのフォルダなど
