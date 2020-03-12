@@ -5,8 +5,6 @@
 \title{Pipe operator}
 \usage{
 lhs \%>\% rhs
-
-lhs \%<>\% rhs
 }
 \description{
 See \code{magrittr::\link[magrittr]{\%>\%}} for details.

@@ -93,3 +93,18 @@ get_info.reared <- function(fname) {
     as.integer()
   out
 }
+
+`%not_in%` <- purrr::negate(`%in%`)
+
+#' Pipe operator
+#'
+#' See \code{magrittr::\link[magrittr]{\%>\%}} for details.
+#'
+#' @name %>%
+#' @rdname pipe
+#' @keywords internal
+#' @export
+#' @importFrom magrittr %>%
+#' @usage lhs \%>\% rhs
+
+NULL
