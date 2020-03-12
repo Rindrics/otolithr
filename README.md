@@ -19,16 +19,8 @@
 
 ## 使い方
 
-### インストール
-以下をRのコンソールに入力して下さい （[Rtools](https://cran.r-project.org/bin/windows/Rtools/) が必要です）
-```
-# install.packages("devtools")   # If package 'devtools' is not installed to your machine
-devtools::install_github("akikirinrin/otolithr")
-library(otolithr)
-```
-### 使ってみる
 ```
 path <- "YOUR_PATH_TO_HDR_FILES"                  # .hdr ファイルが入ったNASのフォルダなど
 dat  <- hdr2df_in_dir(path, species = "maiwashi") # 現時点ではマイワシのみに対応
-preview(dat)                                      # 日齢--耳石径関係をプロットします
+preview(dat)                                      # 日齢--耳石径関係をプロット
 ```
