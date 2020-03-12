@@ -31,6 +31,7 @@ inc2age <- function(incno, species = NULL) {
          "maaji" = incno + 2)
 }
 
+#' @export
 hdr2df <- function(path, species, pick_rank = NULL) {
   hdr       <- read_hdr(path)
   inc_width <- extract_incwidth(hdr)
@@ -41,8 +42,14 @@ hdr2df <- function(path, species, pick_rank = NULL) {
                          iAge = inc2age(IncNo, species = species),
                          Species = species,
                          IncWidth_microm = inc_width,
-                         OR_microm = cumsum(inc_width)) %>%
+                         OR_microm = cumsum(inc_width),
+                         BackCalBL_mm = back_calculate(
+                           bl_at_catch = BL_mm,
+                           orvec       = OR_microm,
+                           species     = species)) %>%
     dplyr::mutate(Age = max(iAge))
+
+  confirm_data_format(data)
 
   class(data) <- c(class(data), "otolith")
   if (is.null(pick_rank)) return(data)
