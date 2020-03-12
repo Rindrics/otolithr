@@ -1,7 +1,6 @@
 get_id  <- function(path) {
   fpath.split <- unlist(strsplit(path, "/"))
-  id          <- gsub(".hdr", "", fpath.split[length(fpath.split)])
-  return(id)
+  gsub(".hdr", "", fpath.split[length(fpath.split)])
 }
 
 read_hdr  <- function(path) {
@@ -28,7 +27,7 @@ extract_incwidth <- function(ratocdata) {
 inc2age <- function(incno, species = NULL) {
   switch(species,
          "maiwashi" = incno + 2,
-         "maaji" = incno + 2)
+         "maaji"    = incno + 2)
 }
 
 format_date <- function(hdr) {
