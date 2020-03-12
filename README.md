@@ -1,6 +1,6 @@
 # otolithr
-[![Travis build status](https://travis-ci.org/kikirinrin/otolithr.svg?branch=master)](https://travis-ci.org/kikirinrin/otolithr)
-[![codecov](https://codecov.io/gh/kikirinrin/otolithr/branch/master/graph/badge.svg)](https://codecov.io/gh/kikirinrin/otolithr)
+[![Travis build status](https://travis-ci.com/akikirinrin/otolithr.svg?branch=master)](https://travis-ci.com/akikirinrin/otolithr)
+[![codecov](https://codecov.io/gh/akikirinrin/otolithr/branch/master/graph/badge.svg)](https://codecov.io/gh/akikirinrin/otolithr)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
 
 ![example](https://gist.githubusercontent.com/akikirinrin/1949f96742cbd8ba4396cf57657888d0/raw/9bccbc1e775c5fa16fbe4d5ecfb79a00fe551a52/example.png)
