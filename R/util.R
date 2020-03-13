@@ -5,6 +5,10 @@ rm_extension <- function(x, extension = ".hdr") {
   sub(regex, "", x)
 }
 
+extract_fname <- function(path) {
+  stringr::str_extract(path, "(?<=/)[^/]+$")
+}
+
 split_fname <- function(fname, sep = "_") {
 # This function may be unnecessary.
   split <- strsplit(fname, sep) %>%

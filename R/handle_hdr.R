@@ -47,13 +47,29 @@ format_date <- function(hdr) {
 #'          pick_rank = "C")
 #' }
 #' @export
-hdr2df <- function(path, species, pick_rank = NULL) {
+hdr2df <- function(path, species, fname_pattern = NULL, pick_rank = NULL) {
   hdr       <- read_hdr(path)
   inc_width <- extract_incwidth(hdr)
   incno     <- as.integer(1:length(inc_width))
+  cruise    <- NA
+  station   <- NA
+  sampleno  <- NA
+  if (!is.null(fname_pattern)) {
+    vec <- path %>%
+      extract_fname() %>%
+      rm_extension() %>%
+      split_fname() %>%
+      purrr::set_names(fname_pattern)
+    cruise   <- vec["Cruise"]
+    station  <- vec["Station"]
+    sampleno <- vec["SampleNo"]
+  }
   data <- tibble::tibble(
     ID              = get_id(path),
+    Cruise          = cruise,
+    Station         = station,
     DateCollected   = format_date(hdr),
+    SampleNo        = sampleno,
     BL_mm           = as.numeric(extract_var(hdr, "\u4f53\u9577")),
     IncNo           = incno,
     iAge            = inc2age(IncNo, species = species),
@@ -101,7 +117,7 @@ locate_rank <- function(hdr, rank) {
 }
 
 filter_by_rank_ <- function(id, df, use_after) {
-  idf <- dplyr::filter(df, ID == id)
+  idf <- dplyr::filter(df, ID == id) # nolint
   if (use_after == TRUE) {
     inc_start <- unique(idf$Rank)
     inc_end   <- max(idf$IncNo)
@@ -109,7 +125,7 @@ filter_by_rank_ <- function(id, df, use_after) {
     inc_start <- 1
     inc_end   <- unique(idf$Rank)
   }
-  return(dplyr::filter(idf, dplyr::between(IncNo, inc_start, inc_end)))
+  return(dplyr::filter(idf, dplyr::between(IncNo, inc_start, inc_end))) # nolint
 }
 
 filter_by_rank <- function(df, use_after = TRUE) {
@@ -118,4 +134,3 @@ filter_by_rank <- function(df, use_after = TRUE) {
                 df = df,
                 use_after = use_after)
 }
-

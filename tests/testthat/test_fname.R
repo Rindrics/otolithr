@@ -1,5 +1,13 @@
-library(otolithr)
 context("Handle file name")
+
+test_that("split_fname() split fname correctly", {
+  fname <- "maiwashi_20200401_st01_001.hdr"
+  split <- split_fname(fname)
+  expect_equal(split[1], "maiwashi")
+  expect_equal(split[2], "20200401")
+  expect_equal(split[3], "st01")
+  expect_equal(split[4], "001.hdr")
+})
 
 test_that("split_fname() split fname correctly", {
   fname <- "Sardinops-melanostictus_YK1508_MT6_10.hdr"
