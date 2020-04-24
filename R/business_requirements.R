@@ -1,6 +1,9 @@
 generate_mock <- function() {
   data.frame(ID              = NA,
+             Cruise          = NA,
+             Station         = NA,
              DateCollected   = NA,
+             SampleNo        = NA,
              BL_mm           = NA,
              IncNo           = NA,
              iAge            = NA,
