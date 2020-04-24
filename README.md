@@ -2,6 +2,7 @@
 [![Travis build status](https://travis-ci.com/akikirinrin/otolithr.svg?branch=master)](https://travis-ci.com/akikirinrin/otolithr)
 [![codecov](https://codecov.io/gh/akikirinrin/otolithr/branch/master/graph/badge.svg)](https://codecov.io/gh/akikirinrin/otolithr)
 [![lifecycle](https://img.shields.io/badge/lifecycle-experimental-orange.svg)](https://www.tidyverse.org/lifecycle/#experimental)
+![pkgdown](https://github.com/akikirinrin/otolithr/workflows/pkgdown/badge.svg)
 
 ## 目的
 成長解析の手順を属人化させないためのパッケージです。

@@ -6,6 +6,7 @@ Description: What the package does (one paragraph).
 Depends: R (>= 3.5)
 License: MIT + file LICENSE
 Encoding: UTF-8
+URL: https://akikirinrin.github.io/otolithr/, https://github.com/akikirinrin/otolithr
 LazyData: true
 RoxygenNote: 7.0.2
 Suggests: 
